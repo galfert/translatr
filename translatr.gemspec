@@ -19,5 +19,9 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_development_dependency "rspec", ">= 2.5.0"
+  s.add_development_dependency "rspec",       ">= 2.5.0"
+  s.add_development_dependency "guard",       ">= 0.3.0"
+  s.add_development_dependency "guard-rspec", ">= 0.2.0"
+  s.add_development_dependency "guard-spork", ">= 0.1.6"
+  s.add_development_dependency "growl",       ">= 1.0.3"
 end
