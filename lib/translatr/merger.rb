@@ -14,7 +14,7 @@ module Translatr
     end
 
     def merge
-      target.merge(source).select do |key, value| 
+      target.merge(source).select do |key, value|
         target.has_key? key
       end
     end
