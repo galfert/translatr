@@ -62,7 +62,6 @@ module Translatr
       end
 
       it "works with multidimensional entries" do
-        pending "maybe use http://api.rubyonrails.org/v2.3.8/classes/ActiveSupport/CoreExtensions/Hash/DeepMerge.html"
         merger.target = { "foo" => "target", "bar" => { "baz" => "beng", "wuz" => "up" } }
         merger.source = { "foo" => "source", "bar" => { "baz" => "pong" } }
         merger.merge.should == { "foo" => "source", "bar" => { "baz" => "pong", "wuz" => "up" } }
@@ -70,9 +69,28 @@ module Translatr
 
       it "skips the locale name (root key)"
 
-      it "ignores entries with variable mismatch"
+      it "ignores entries with variable mismatch" do
+        merger.target = { "foo" => "target", "bar" => "target %{baz}" }
+        merger.source = { "foo" => "source %{bar}", "bar" => "source %{baz}" }
+        merger.merge.should == { "foo" => "target", "bar" => "source %{baz}" }
+      end
 
       it "ignores entries with markup when target has none and key doesn't end with '_html'"
     end
+
+    describe "#variables_in" do
+      it "gives nil for string without variables" do
+        merger.variables_in("foo").should be_nil
+      end
+
+      it "gives the name of a single variables in a string" do
+        merger.variables_in("foo %{bar}").should == ["%{bar}"]
+      end
+
+      it "gives a list of variables in a string" do
+        merger.variables_in("foo %{bar}, %{baz}").should == ["%{bar}", "%{baz}"]
+      end
+    end
+
   end
 end
