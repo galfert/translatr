@@ -34,7 +34,7 @@ module Translatr
           if value.is_a?(Hash)
             merge(target_hash[key], source_hash[key])
           else
-            unless variables_mismatch?(target_hash[key], value)
+            if matching_variables?(target_hash[key], value)
               target_hash[key] = value
             end
           end
@@ -67,9 +67,9 @@ module Translatr
       vars
     end
 
-    def variables_mismatch?(target_string, source_string)
-      has_variables?(source_string) &&
-        (variables_in(target_string) & variables_in(source_string) != variables_in(source_string))
+    def matching_variables?(target_string, source_string)
+      return true unless has_variables?(source_string)
+      variables_in(target_string) & variables_in(source_string) == variables_in(source_string)
     end
   end
 end
