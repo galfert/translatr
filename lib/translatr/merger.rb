@@ -1,19 +1,32 @@
+require 'i18n'
+
 module Translatr
   class Merger
-    attr_accessor :target, :target_filename,
-                  :source, :source_filename
+    attr_accessor :target, :target_filename, :target_locale,
+                  :source, :source_filename, :source_locale
 
-    def load_target(filename)
-      self.target_filename = filename
-      self.target = YAML.load_file(filename)
+    def initialize(source_filename = nil, target_filename = nil)
+      load_source(source_filename) if source_filename
+      load_target(target_filename) if target_filename
     end
 
     def load_source(filename)
       self.source_filename = filename
-      self.source = YAML.load_file(filename)
+      I18n.backend.reload!
+      I18n.backend.load_translations(filename)
+      self.source_locale = I18n.backend.available_locales.first
+      self.source = I18n.backend.send(:translations)[source_locale]
     end
 
-    def merge(target_hash=nil, source_hash=nil)
+    def load_target(filename)
+      self.target_filename = filename
+      I18n.backend.reload!
+      I18n.backend.load_translations(filename)
+      self.target_locale = I18n.backend.available_locales.first
+      self.target = I18n.backend.send(:translations)[target_locale]
+    end
+
+    def merge(target_hash = nil, source_hash = nil)
       target_hash ||= target
       source_hash ||= source
       source_hash.each_pair do |key, value|
@@ -28,6 +41,19 @@ module Translatr
         end
       end
       target_hash
+    end
+
+    def store(filename = nil)
+      filename ||= target_filename
+      data = Hash.new
+      data[target_locale] = merge
+      File.open(filename, "w") do |file|
+        if data.respond_to?(:ya2yaml)
+          file.write(data.ya2yaml(:syck_compatible => true))
+        else
+          YAML.dump(data, file)
+        end
+      end
     end
 
     def has_variables?(text_string)

@@ -1,1 +1,3 @@
-foo: baz
+---
+en:
+  foo: baz
