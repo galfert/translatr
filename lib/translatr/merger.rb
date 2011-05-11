@@ -66,7 +66,7 @@ module Translatr
       vars = text_string.gsub(/%\{(\w+)\}/).to_a
       return nil if vars.empty?
       return [vars[0]] if vars.size == 1
-      vars
+      vars.uniq
     end
 
     def matching_variables?(target_string, source_string)

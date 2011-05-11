@@ -112,6 +112,12 @@ module Translatr
           merger.merge.should == { :foo => "target", :bar => "source %{baz}" }
         end
 
+        it "works with entries where variables match but their numbers differ" do
+          merger.target = { :foo => "target %{bar}", :bar => "target %{baz} %{baz}" }
+          merger.source = { :foo => "source %{bar} %{bar}", :bar => "source %{baz}"}
+          merger.merge.should == { :foo => "source %{bar} %{bar}", :bar => "source %{baz}" }
+        end
+
         it "ignores entries with markup when target has none and key doesn't end with '_html'"
       end
 
@@ -126,6 +132,10 @@ module Translatr
 
         it "gives a list of variables in a string" do
           merger.variables_in("foo %{bar}, %{baz}").should == ["%{bar}", "%{baz}"]
+        end
+
+        it "gives duplicate variables only once" do
+          merger.variables_in("foo %{bar}, %{bar}").should == ["%{bar}"]
         end
       end
 
