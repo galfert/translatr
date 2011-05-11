@@ -141,7 +141,7 @@ module Translatr
           data = YAML.load_file(filename)
           File.delete(filename)
 
-          data.should == { :xx => { :foo => "baz" } }
+          data.should == { "xx" => { "foo" => "baz" } }
         end
 
         it "saves the merged data to the target file when no filename is given" do

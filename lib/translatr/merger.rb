@@ -1,4 +1,5 @@
 require 'i18n'
+require 'ya2yaml'
 
 module Translatr
   class Merger
@@ -47,6 +48,7 @@ module Translatr
       filename ||= target_filename
       data = Hash.new
       data[target_locale] = merge
+      data = data.deep_stringify_keys
       File.open(filename, "w") do |file|
         if data.respond_to?(:ya2yaml)
           file.write(data.ya2yaml(:syck_compatible => true))
